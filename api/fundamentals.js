@@ -7,10 +7,17 @@ module.exports = async (req, res) => {
 
   try {
     const response = await fetch(url);
-    const data = await response.json();
-    res.status(200).json(data);
+    const text = await response.text();
+
+    try {
+      const data = JSON.parse(text);
+      res.status(200).json(data);
+    } catch (parseError) {
+      console.error('Error parsing JSON:', parseError);
+      res.status(500).json({ error: 'Invalid JSON response' });
+    }
   } catch (error) {
-    console.error(error);
+    console.error('Error fetching data:', error);
     res.status(500).json({ error: 'An error occurred' });
   }
 };
